@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+    <form class="input-group" action="{{ url_for('.add') }}" method="post">
+        <input name="_csrf_token" type='hidden' value="{{ csrf_token() }}">
+        <input class="form-control" name="content" type="text" placeholder="todo" required>
+        <span class="input-group-btn">
+        <button class="btn btn-primary" type="submit">Add</button>
+        </span>
+    </form>
+
+    <div>
+        <h2></h2>
+        {% if todos %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>status</th>
+                    <th>content</th>
+                    <th>time</th>
+                    <th>operation</th>
+                    <th>
+                        <form class="input-group" action="{{ url_for('.clear') }}" method="post">
+                            <input name="_csrf_token" type='hidden' value="{{ csrf_token() }}">
+                            <button class="btn btn-default" type="submit">ClearAll</button>
+                        </form>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for todo in todos %}
+                    <tr>
+                        <td>
+                            {% if todo.status == 1 %}
+                                &nbsp; &nbsp; &radic;
+                            {% else %}
+                                &nbsp; &nbsp; X
+                            {% endif %}
+                        </td>
+                        <td>{{ todo.content }}</td>
+                        <td>{{ todo.created_time | format_time }}</td>
+                        {% if todo.status == 1 %}
+                            <td>
+                                <form class="input-group" action="{{ url_for('.reset', id=todo.id) }}" method="post">
+                                    <input name="_csrf_token" type='hidden' value="{{ csrf_token() }}">
+                                    <button class="btn btn-primary" type="submit">Reset</button>
+                                </form>
+                            </td>
+                        {% else %}
+                            <td>
+                                <form class="input-group" action="{{ url_for('.done', id=todo.id) }}" method="post">
+                                    <input name="_csrf_token" type='hidden' value="{{ csrf_token() }}">
+                                    <button class="btn btn-primary" type="submit">Done</button>
+                                </form>
+                            </td>
+                        {% endif %}
+                        <td>
+                            <form class="input-group" action="{{ url_for('.delete', id=todo.id) }}" method="post">
+                                <input name="_csrf_token" type='hidden' value="{{ csrf_token() }}">
+                                <button class="btn btn-danger" type="submit">Delete</button>
+                            </form>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <h3 class="text-info">please add todos</h3>
+        {% endif %}
+
+    </div>
+{% endblock %}
+
